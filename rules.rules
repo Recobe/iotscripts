@@ -1,0 +1,31 @@
+var left_threshold = 400
+var right_threshold = 700
+var dir = ""
+var budg = 0
+var incr = 100
+ 
+rule "Budget"
+when
+    Item GenericMQTTThing_NFCCardNumber received update
+then
+    budg = budg + incr
+end
+ 
+rule "Direction"
+when
+    Item GenericMQTTThing_ received update
+then
+    if (budg > 0) {
+ 
+        if (GenericMQTTThing_.state < 400) {
+            dir = "l"
+            GenericMQTTThing_SendDirection.sendCommand(dir)
+            budg = budg - 1
+        }
+        if(GenericMQTTThing_.state > 600) {
+            dir = "r"
+            GenericMQTTThing_SendDirection.sendCommand(dir)
+            budg = budg - 1
+        }
+    }
+end
